@@ -1,0 +1,1 @@
+# Cloud Configuration\n\nThis directory contains cloud-related configurations and deployment settings for the project.\n\n## Contents\n- Deployment configurations\n- Cloud service settings\n- Environment variables\n- Security policies

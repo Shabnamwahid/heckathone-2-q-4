@@ -1,0 +1,1 @@
+# Specifications\n\nThis directory contains all the specifications for the project. Each specification should follow the standard format and include:\n\n- Purpose\n- Requirements\n- Implementation details\n- Validation criteria

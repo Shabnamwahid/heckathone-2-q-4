@@ -1,0 +1,1 @@
+# Main Specification\n\n## Purpose\nThis is the main specification file that outlines the core requirements and functionality of the project.\n\n## Requirements\n- [List main requirements here]\n\n## Implementation Details\n- [Describe implementation approach here]\n\n## Validation Criteria\n- [Define how this will be validated here]

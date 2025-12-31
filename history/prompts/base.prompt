@@ -1,0 +1,1 @@
+Base Prompt Template\n\nThis is the base prompt template for the Spec-Kit Plus project.\n\nProject: [Project Name]\nVersion: [Version]\nDate: [Date]\n\nPurpose:\n[Describe the purpose of this prompt]\n\nRequirements:\n[Specify requirements]\n\nImplementation:\n[Describe implementation approach]\n\nValidation:\n[Define validation criteria]

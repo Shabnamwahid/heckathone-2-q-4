@@ -1,0 +1,57 @@
+# Project Constitution: Hackathon II - The Evolution of Todo 
+## Overview 
+This document serves as the global constitution for the Hackathon II project, outlining the rules, constraints, and guidelines for the development of "The Evolution of Todo" application through five distinct phases. 
+## Project Structure Rules 
+- This project has exactly 5 phases (Phase I to Phase V) 
+- All phases must be implemented sequentially, one by one (not together) 
+- Each phase must live in its own dedicated folder under the root project 
+- Phase folders must be created only when that specific phase starts 
+- All work for a phase (specs, plan, tasks, implementation, research, checklist) must stay inside that phase's folder 
+- Root folder must remain clean (no phase files in root) 
+- All specifications must be stored in the specs/ directory at the root level 
+- Cloud configurations must be stored in the .cloud/ directory 
+- Historical prompts must be stored in the history/prompts/ directory 
+## Development Rules 
+- Strict Spec-Driven Development methodology must be followed 
+- No manual coding is allowed 
+- All code must be generated via AI from specifications 
+- Specifications are the single source of truth 
+- The history/prompts directory must record all major prompts used for development 
+- Each phase must be completed and validated before starting the next phase 
+## Phase Overview 
+### Phase I: In-memory Python CLI Todo App 
+- Develop a command-line interface todo application in Python 
+- Implement core todo functionality (add, list, complete, delete tasks) 
+- Store data in-memory (no persistent storage) 
+- Focus on basic functionality and user experience 
+### Phase II: Full-stack Web App (Next.js + FastAPI) 
+- Migrate the CLI application to a web-based interface 
+- Implement using Next.js for the frontend 
+- Implement using FastAPI for the backend 
+- Add persistent storage capabilities 
+- Ensure responsive design and improved UX 
+### Phase III: AI-powered Todo Chatbot 
+- Integrate AI capabilities to interact with the todo application 
+- Implement natural language processing for todo commands 
+- Enable conversational interface for task management 
+- Allow users to manage tasks through chat interactions 
+### Phase IV: Local Kubernetes Deployment 
+- Containerize the application components 
+- Deploy to a local Kubernetes cluster 
+- Implement proper service discovery and load balancing 
+- Configure local development environment with Kubernetes 
+### Phase V: Cloud-native Deployment (Kafka, Dapr, DOKS) 
+- Deploy the application to a cloud environment 
+- Implement Kafka for event streaming 
+- Use Dapr for distributed application runtime 
+- Deploy on DigitalOcean Kubernetes Service (DOKS) 
+- Ensure scalability, resilience, and monitoring 
+## Compliance Requirements 
+- All code must be generated from specifications 
+- No phase files may exist in the root directory 
+- Each phase must be self-contained within its dedicated folder 
+- Specifications must be updated and maintained throughout the project 
+- All major development prompts must be logged in history/prompts/ 
+- Strict adherence to the sequential phase implementation is mandatory 
+## Enforcement 
+This constitution is binding for all project contributors. Any deviation from these rules must be documented and approved by the project lead before implementation. 

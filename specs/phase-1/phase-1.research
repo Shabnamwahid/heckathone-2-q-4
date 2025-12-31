@@ -1,0 +1,27 @@
+# Phase I Research: Python CLI Best Practices 
+## Overview 
+This research document covers best practices for creating a command-line interface application in Python, focusing on the requirements for our In-memory Python CLI Todo App. 
+## Python CLI Best Practices 
+- Use clear and consistent menu prompts 
+- Provide helpful feedback messages for user actions 
+- Implement a main loop that continues until the user chooses to exit 
+- Use functions to organize different operations 
+- Follow the principle of least surprise for user interactions 
+## In-Memory Data Structures in Python 
+- Python dictionaries are ideal for storing key-value pairs like task ID and task details 
+- Python lists can be used to maintain ordered collections of tasks 
+- A combination of dictionaries and lists can provide flexible storage options 
+- Consider using a list of dictionaries to store multiple tasks with multiple attributes 
+- Use unique identifiers for each task to enable operations like update and delete 
+## Python Input Validation Techniques 
+- Use try-except blocks to handle potential errors when converting input types 
+- Validate user input before processing to prevent errors 
+- Check if task IDs exist before attempting operations on them 
+- Use conditional statements to validate menu choices 
+- Provide clear error messages when input validation fails 
+## Python Best Practices for Todo App 
+- Use meaningful variable and function names 
+- Include docstrings for functions to explain their purpose 
+- Keep functions focused on a single responsibility 
+- Use constants for values that don''t change 
+- Follow PEP 8 style guidelines for code formatting 
