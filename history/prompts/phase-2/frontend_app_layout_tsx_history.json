@@ -1,0 +1,1 @@
+{\n  "file": "frontend/app/layout.tsx",\n  "changes": [\n    {\n      "timestamp": "2026-01-09T19:17:37.061192+00:00",\n      "type": "created",\n      "old_content": null,\n      "new_content": "Next.js layout component",\n      "reason": "Initial creation of Next.js root layout component"\n    }\n  ]\n}

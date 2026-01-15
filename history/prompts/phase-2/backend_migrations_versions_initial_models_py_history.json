@@ -1,0 +1,1 @@
+{\n  "file": "backend/migrations/versions/e2e4f020bb8a_initial_models.py",\n  "changes": [\n    {\n      "timestamp": "2026-01-09T19:17:37.061192+00:00",\n      "type": "created",\n      "old_content": null,\n      "new_content": "Initial models migration file",\n      "reason": "Initial migration file for user and todo models"\n    }\n  ]\n}

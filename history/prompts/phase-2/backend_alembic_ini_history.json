@@ -1,0 +1,1 @@
+{\n  "file": "backend/alembic.ini",\n  "changes": [\n    {\n      "timestamp": "2026-01-09T19:17:37.061192+00:00",\n      "type": "created",\n      "old_content": null,\n      "new_content": "Alembic configuration file",\n      "reason": "Initial creation of alembic configuration with database URL and migration settings"\n    }\n  ]\n}

@@ -1,0 +1,1 @@
+{\n  "file": "backend/app/__init__.py",\n  "changes": [\n    {\n      "timestamp": "2026-01-09T19:17:37.061192+00:00",\n      "type": "created",\n      "old_content": null,\n      "new_content": "",\n      "reason": "Initial creation of app package init file"\n    }\n  ]\n}

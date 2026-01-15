@@ -1,0 +1,1 @@
+{\n  "file": "backend/migrations/script.py.mako",\n  "changes": [\n    {\n      "timestamp": "2026-01-09T19:17:37.061192+00:00",\n      "type": "created",\n      "old_content": null,\n      "new_content": "Mako template for Alembic migration scripts",\n      "reason": "Initial creation of alembic migration script template"\n    }\n  ]\n}
