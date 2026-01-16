@@ -1,1 +1,24 @@
-from fastapi import Depends, HTTPException, status\nfrom fastapi.security import HTTPBearer, HTTPAuthorizationCredentials\nimport jwt\nfrom jwt.exceptions import InvalidTokenError\nfrom .config import settings\nfrom typing import Dict, Any\n\nsecurity = HTTPBearer()\n\nasync def get_current_user(token: HTTPAuthorizationCredentials = Depends(security)) -> Dict[Any, Any]:\n    credentials_exception = HTTPException(\n        status_code=status.HTTP_401_UNAUTHORIZED,\n        detail="Could not validate credentials",\n        headers={"WWW-Authenticate": "Bearer"},\n    )\n    \n    try:\n        payload = jwt.decode(token.credentials, settings.auth_secret, algorithms=[settings.jwt_algorithm])\n        user_id: str = payload.get("sub")\n        if user_id is None:\n            raise credentials_exception\n        return {"user_id": user_id}\n    except InvalidTokenError:\n        raise credentials_exception
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
+from jwt.exceptions import InvalidTokenError
+from config import settings  # Changed to absolute import
+from typing import Dict, Any
+
+security = HTTPBearer()
+
+async def get_current_user(token: HTTPAuthorizationCredentials = Depends(security)) -> Dict[Any, Any]:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    try:
+        payload = jwt.decode(token.credentials, settings.better_auth_secret, algorithms=[settings.jwt_algorithm])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+        return {"user_id": user_id}
+    except InvalidTokenError:
+        raise credentials_exception

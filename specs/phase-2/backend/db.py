@@ -1,1 +1,21 @@
-from sqlmodel import create_engine, Session, SQLModel\nfrom sqlalchemy.orm import sessionmaker\nfrom .config import settings\nfrom typing import Generator\nimport os\n\n# Database URL from environment variable\nDATABASE_URL = os.getenv("DATABASE_URL", settings.database_url)\n\n# Create sync engine\nengine = create_engine(DATABASE_URL, echo=True)\n\n# Create session maker for sync sessions\nSessionLocal = sessionmaker(bind=engine, expire_on_commit=False)\n\nasync def create_db_and_tables():\n    SQLModel.metadata.create_all(engine)\n\ndef get_session() -> Generator[Session, None, None]:\n    with SessionLocal() as session:\n        yield session
+from sqlmodel import create_engine, Session, SQLModel
+from sqlalchemy.orm import sessionmaker
+from config import settings  # Changed from relative to absolute import
+from typing import Generator
+import os
+
+# Database URL from environment variable
+DATABASE_URL = os.getenv("DATABASE_URL", settings.database_url)
+
+# Create sync engine
+engine = create_engine(DATABASE_URL, echo=True)
+
+# Create session maker for sync sessions
+SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
+
+async def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
+
+def get_session() -> Generator[Session, None, None]:
+    with SessionLocal() as session:
+        yield session

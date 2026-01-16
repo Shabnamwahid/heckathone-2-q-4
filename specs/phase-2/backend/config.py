@@ -1,1 +1,14 @@
-from pydantic_settings import BaseSettings\r\nfrom typing import Optional\r\n\r\nclass Settings(BaseSettings):\r\n    database_url: str = "postgresql+asyncpg://username:password@localhost/dbname"\r\n    auth_secret: str = "your-better-auth-secret-key"\r\n    jwt_algorithm: str = "HS256"\r\n    frontend_url: Optional[str] = "http://localhost:3000"\r\n    \r\n    class Config:\r\n        env_file = ".env"\r\n\r\nsettings = Settings()
+from pydantic_settings import BaseSettings
+from typing import Optional
+
+
+class Settings(BaseSettings):
+    database_url: str = "postgresql+asyncpg://username:password@localhost/dbname"
+    better_auth_secret: str = "your-better-auth-secret-key"
+    jwt_algorithm: str = "HS256"
+    frontend_url: Optional[str] = "http://localhost:3000"
+    
+    class Config:
+        env_file = ".env"
+
+settings = Settings()

@@ -1,1 +1,153 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query\nfrom sqlmodel import Session, select\nfrom typing import List, Optional\nfrom ..models import Task, TaskCreate, TaskRead, TaskUpdate\nfrom ..dependencies import get_current_user\nfrom ..db import get_session\nfrom uuid import UUID\nfrom datetime import datetime\n\nrouter = APIRouter()\n\n@router.get("/tasks", response_model=List[TaskRead])\nasync def get_tasks(\n    current_user: dict = Depends(get_current_user),\n    session: Session = Depends(get_session),\n    status: Optional[str] = Query(None, description="Filter by status: all, pending, completed"),\n    sort: Optional[str] = Query(None, description="Sort by: created_at, updated_at, title")\n):\n    """Get all tasks for the current user"""\n    user_id = current_user["user_id"]\n    \n    query = select(Task).where(Task.user_id == user_id)\n    \n    if status:\n        if status == "pending":\n            query = query.where(Task.completed == False)\n        elif status == "completed":\n            query = query.where(Task.completed == True)\n    \n    if sort:\n        if sort == "created_at":\n            query = query.order_by(Task.created_at)\n        elif sort == "updated_at":\n            query = query.order_by(Task.updated_at)\n        elif sort == "title":\n            query = query.order_by(Task.title)\n    \n    tasks = session.exec(query).all()\n    return tasks\n\n@router.post("/tasks", response_model=TaskRead, status_code=status.HTTP_201_CREATED)\nasync def create_task(\n    task_data: TaskCreate,\n    current_user: dict = Depends(get_current_user),\n    session: Session = Depends(get_session)\n):\n    """Create a new task for the current user"""\n    user_id = current_user["user_id"]\n    \n    task = Task(\n        title=task_data.title,\n        description=task_data.description,\n        completed=task_data.completed,\n        user_id=user_id\n    )\n    \n    session.add(task)\n    session.commit()\n    session.refresh(task)\n    \n    return task\n\n@router.get("/tasks/{task_id}", response_model=TaskRead)\nasync def get_task(\n    task_id: UUID,\n    current_user: dict = Depends(get_current_user),\n    session: Session = Depends(get_session)\n):\n    """Get a specific task by ID"""\n    user_id = current_user["user_id"]\n    \n    task = session.get(Task, task_id)\n    if not task:\n        raise HTTPException(status_code=404, detail="Task not found")\n    \n    if task.user_id != user_id:\n        raise HTTPException(status_code=403, detail="Not authorized to access this task")\n    \n    return task\n\n@router.put("/tasks/{task_id}", response_model=TaskRead)\nasync def update_task(\n    task_id: UUID,\n    task_update: TaskUpdate,\n    current_user: dict = Depends(get_current_user),\n    session: Session = Depends(get_session)\n):\n    """Update a specific task"""\n    user_id = current_user["user_id"]\n    \n    task = session.get(Task, task_id)\n    if not task:\n        raise HTTPException(status_code=404, detail="Task not found")\n    \n    if task.user_id != user_id:\n        raise HTTPException(status_code=403, detail="Not authorized to update this task")\n    \n    # Update task fields\n    update_data = task_update.model_dump(exclude_unset=True)\n    for field, value in update_data.items():\n        setattr(task, field, value)\n    \n    task.updated_at = datetime.utcnow()\n    session.add(task)\n    session.commit()\n    session.refresh(task)\n    \n    return task\n\n@router.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)\nasync def delete_task(\n    task_id: UUID,\n    current_user: dict = Depends(get_current_user),\n    session: Session = Depends(get_session)\n):\n    """Delete a specific task"""\n    user_id = current_user["user_id"]\n    \n    task = session.get(Task, task_id)\n    if not task:\n        raise HTTPException(status_code=404, detail="Task not found")\n    \n    if task.user_id != user_id:\n        raise HTTPException(status_code=403, detail="Not authorized to delete this task")\n    \n    session.delete(task)\n    session.commit()\n    \n    return {"detail": "Task deleted successfully"}\n\n@router.patch("/tasks/{task_id}/complete", response_model=TaskRead)\nasync def toggle_task_completion(\n    task_id: UUID,\n    current_user: dict = Depends(get_current_user),\n    session: Session = Depends(get_session)\n):\n    """Toggle the completion status of a task"""\n    user_id = current_user["user_id"]\n    \n    task = session.get(Task, task_id)\n    if not task:\n        raise HTTPException(status_code=404, detail="Task not found")\n    \n    if task.user_id != user_id:\n        raise HTTPException(status_code=403, detail="Not authorized to update this task")\n    \n    task.completed = not task.completed\n    task.updated_at = datetime.utcnow()\n    session.add(task)\n    session.commit()\n    session.refresh(task)\n    \n    return task
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlmodel import Session, select
+from typing import List, Optional
+from models import Task, TaskCreate, TaskRead, TaskUpdate
+from dependencies import get_current_user
+from db import get_session
+from uuid import UUID
+from datetime import datetime
+
+router = APIRouter()
+
+@router.get("/tasks", response_model=List[TaskRead])
+async def get_tasks(
+    current_user: dict = Depends(get_current_user),
+    session: Session = Depends(get_session),
+    status: Optional[str] = Query(None, description="Filter by status: all, pending, completed"),
+    sort: Optional[str] = Query(None, description="Sort by: created_at, updated_at, title")
+):
+    """Get all tasks for the current user"""
+    user_id = current_user["user_id"]
+    
+    query = select(Task).where(Task.user_id == user_id)
+    
+    if status:
+        if status == "pending":
+            query = query.where(Task.completed == False)
+        elif status == "completed":
+            query = query.where(Task.completed == True)
+    
+    if sort:
+        if sort == "created_at":
+            query = query.order_by(Task.created_at)
+        elif sort == "updated_at":
+            query = query.order_by(Task.updated_at)
+        elif sort == "title":
+            query = query.order_by(Task.title)
+    
+    tasks = session.exec(query).all()
+    return tasks
+
+@router.post("/tasks", response_model=TaskRead, status_code=status.HTTP_201_CREATED)
+async def create_task(
+    task_data: TaskCreate,
+    current_user: dict = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """Create a new task for the current user"""
+    user_id = current_user["user_id"]
+    
+    task = Task(
+        title=task_data.title,
+        description=task_data.description,
+        completed=task_data.completed,
+        user_id=user_id
+    )
+    
+    session.add(task)
+    session.commit()
+    session.refresh(task)
+    
+    return task
+
+@router.get("/tasks/{task_id}", response_model=TaskRead)
+async def get_task(
+    task_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """Get a specific task by ID"""
+    user_id = current_user["user_id"]
+    
+    task = session.get(Task, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    if task.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this task")
+    
+    return task
+
+@router.put("/tasks/{task_id}", response_model=TaskRead)
+async def update_task(
+    task_id: UUID,
+    task_update: TaskUpdate,
+    current_user: dict = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """Update a specific task"""
+    user_id = current_user["user_id"]
+    
+    task = session.get(Task, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    if task.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this task")
+    
+    # Update task fields
+    update_data = task_update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(task, field, value)
+    
+    task.updated_at = datetime.utcnow()
+    session.add(task)
+    session.commit()
+    session.refresh(task)
+    
+    return task
+
+@router.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_task(
+    task_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """Delete a specific task"""
+    user_id = current_user["user_id"]
+    
+    task = session.get(Task, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    if task.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this task")
+    
+    session.delete(task)
+    session.commit()
+    
+    return {"detail": "Task deleted successfully"}
+
+@router.patch("/tasks/{task_id}/complete", response_model=TaskRead)
+async def toggle_task_completion(
+    task_id: UUID,
+    current_user: dict = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    """Toggle the completion status of a task"""
+    user_id = current_user["user_id"]
+    
+    task = session.get(Task, task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    if task.user_id != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this task")
+    
+    task.completed = not task.completed
+    task.updated_at = datetime.utcnow()
+    session.add(task)
+    session.commit()
+    session.refresh(task)
+    
+    return task

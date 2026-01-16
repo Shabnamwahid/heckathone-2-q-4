@@ -1,1 +1,32 @@
-#!/usr/bin/env python3\r\nfrom fastapi import FastAPI\r\nfrom fastapi.middleware.cors import CORSMiddleware\r\nfrom .db import create_db_and_tables\r\nfrom .routes import tasks\r\nimport os\r\n\r\napp = FastAPI(title="Multi-User Todo API", version="1.0.0")\r\n\r\n# CORS middleware for frontend\r\napp.add_middleware(\r\n    CORSMiddleware,\r\n    allow_origins=["http://localhost:3000", os.getenv("FRONTEND_URL", "")],\r\n    allow_credentials=True,\r\n    allow_methods=["*"],\r\n    allow_headers=["*"],\r\n)\r\n\r\n@app.on_event("startup")\r\nasync def startup_event():\r\n    await create_db_and_tables()\r\n\r\n# Include task routes\r\napp.include_router(tasks.router, prefix="/api", tags=["tasks"])\r\n\r\n@app.get("/")\r\nasync def root():\r\n    return {"message": "Multi-User Todo API is running"}\r\n\r\nif __name__ == "__main__":\r\n    import uvicorn\r\n    uvicorn.run(app, host="0.0.0.0", port=8000)
+#!/usr/bin/env python3
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from db import create_db_and_tables
+from routes import tasks
+import os
+
+app = FastAPI(title="Multi-User Todo API", version="1.0.0")
+
+# CORS middleware for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", os.getenv("FRONTEND_URL", "")],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.on_event("startup")
+async def startup_event():
+    await create_db_and_tables()
+
+# Include task routes
+app.include_router(tasks.router, prefix="/api", tags=["tasks"])
+
+@app.get("/")
+async def root():
+    return {"message": "Multi-User Todo API is running"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
