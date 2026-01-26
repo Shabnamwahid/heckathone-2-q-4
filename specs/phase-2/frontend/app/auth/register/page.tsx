@@ -34,12 +34,12 @@ export default function RegisterPage() {
 
     try {
       const response = await authAPI.register(email, password, name);
-      
+
       // Store the JWT token in localStorage
       if (response.data.access_token) {
         localStorage.setItem('jwt_token', response.data.access_token);
-        // Redirect to dashboard/home
-        router.push('/');
+        // Redirect to login page after successful registration
+        router.push('/auth/login');
         router.refresh();
       } else {
         setError('Registration failed: No token received');
