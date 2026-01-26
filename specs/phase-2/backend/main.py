@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db import create_db_and_tables
 from routes import tasks
+from routes import auth
 import os
 
 app = FastAPI(title="Multi-User Todo API", version="1.0.0")
@@ -17,14 +18,15 @@ app.add_middleware(
 )
 
 @app.on_event("startup")
-async def startup_event():
-    await create_db_and_tables()
+def startup_event():
+    create_db_and_tables()
 
-# Include task routes
+# Include auth and task routes
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(tasks.router, prefix="/api", tags=["tasks"])
 
 @app.get("/")
-async def root():
+def root():
     return {"message": "Multi-User Todo API is running"}
 
 if __name__ == "__main__":
