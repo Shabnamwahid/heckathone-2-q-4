@@ -33,3 +33,9 @@
 - Login endpoint with credential verification and JWT token generation
 - Protected task endpoints requiring valid JWT tokens
 - Dependency injection for current user retrieval
+
+## Frontend Routing Fixes
+- Navbar fixed with use client
+- Routes fixed to /login, /register, /tasks
+- Home page separated
+- Frontend routing issue resolved

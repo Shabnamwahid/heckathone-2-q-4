@@ -23,3 +23,16 @@
 - Modern UI with clean aesthetics
 - Proper routing with Next.js Link component
 - Consistent styling with Tailwind CSS
+
+## Model Fixes
+- Fixed User and UserCreate model mismatch
+- Resolved FastAPI import error
+- Backend authentication stabilized
+
+## JWT Helper Function
+- Added create_access_token function to dependencies
+- Fixed missing import issue in auth routes
+- Backend authentication now fully functional
+
+## Dependencies
+- Added missing python-jose dependency for JWT support

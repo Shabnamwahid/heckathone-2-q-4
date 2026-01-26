@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { useState } from "react";
 
@@ -22,10 +24,10 @@ export default function Navbar() {
             <Link href="/tasks" className="text-gray-700 hover:text-indigo-600 font-medium">
               Tasks
             </Link>
-            <Link href="/auth/login" className="text-gray-700 hover:text-indigo-600 font-medium">
+            <Link href="/login" className="text-gray-700 hover:text-indigo-600 font-medium">
               Login
             </Link>
-            <Link href="/auth/register" className="text-gray-700 hover:text-indigo-600 font-medium">
+            <Link href="/register" className="text-gray-700 hover:text-indigo-600 font-medium">
               Register
             </Link>
           </div>
@@ -58,29 +60,29 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
               onClick={() => setIsOpen(false)}
             >
               Home
             </Link>
-            <Link 
-              href="/tasks" 
+            <Link
+              href="/tasks"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
               onClick={() => setIsOpen(false)}
             >
               Tasks
             </Link>
-            <Link 
-              href="/auth/login" 
+            <Link
+              href="/login"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
               onClick={() => setIsOpen(false)}
             >
               Login
             </Link>
-            <Link 
-              href="/auth/register" 
+            <Link
+              href="/register"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
               onClick={() => setIsOpen(false)}
             >

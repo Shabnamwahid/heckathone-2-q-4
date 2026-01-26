@@ -2,6 +2,20 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 import uuid
 from datetime import datetime
+from pydantic import BaseModel
+
+
+class UserBase(SQLModel):
+    email: str = Field(unique=True, index=True, max_length=255)
+
+
+class User(UserBase, table=True):
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
+    hashed_password: str = Field(max_length=255)
+
+
+class UserCreate(UserBase):
+    password: str = Field(min_length=6, max_length=128)
 
 
 class TaskBase(SQLModel):
