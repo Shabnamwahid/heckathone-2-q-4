@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from db import create_db_and_tables
-from routes import tasks
-from routes import auth
 import os
+
+# Import using absolute paths relative to the backend package
+from backend.db import create_db_and_tables
+from backend.routes import tasks
+from backend.routes import auth
+from backend.dependencies import get_current_user
 
 app = FastAPI(title="Multi-User Todo API", version="1.0.0")
 
@@ -17,6 +20,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Global JWT verification middleware
+@app.middleware("http")
+async def jwt_auth_middleware(request: Request, call_next):
+    # Apply JWT verification to all /api routes except auth routes
+    if request.url.path.startswith('/api/') and not request.url.path.startswith('/auth/'):
+        # Extract token from Authorization header
+        authorization = request.headers.get('Authorization')
+        if not authorization or not authorization.startswith('Bearer '):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Missing or invalid Authorization header",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # Verify the token by calling get_current_user
+        try:
+            from backend.dependencies import get_current_user
+            from fastapi.security import HTTPAuthorizationCredentials
+            token = authorization.split(' ')[1]
+            credentials = HTTPAuthorizationCredentials(scheme='Bearer', credentials=token)
+            await get_current_user(credentials)
+        except HTTPException:
+            raise
+
+    response = await call_next(request)
+    return response
+
 @app.on_event("startup")
 def startup_event():
     create_db_and_tables()
@@ -27,7 +57,7 @@ app.include_router(tasks.router, prefix="/api", tags=["tasks"])
 
 @app.get("/")
 def root():
-    return {"message": "Multi-User Todo API is running"}
+    return {"message": "Multi-User Todo API is running - Phase 2 Complete"}
 
 if __name__ == "__main__":
     import uvicorn

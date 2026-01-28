@@ -39,3 +39,15 @@
 - Routes fixed to /login, /register, /tasks
 - Home page separated
 - Frontend routing issue resolved
+
+## Frontend Feature Implementation
+- JWT token storage implemented (localStorage)
+- Login page with form validation and API integration
+- Register page with form validation and API integration
+- Tasks page with full CRUD functionality
+- API service layer created for backend communication
+- Loading states and error handling implemented
+- Responsive UI with modern design
+- Authentication state management in Navbar
+- Logout functionality implemented
+- Environment variables configured

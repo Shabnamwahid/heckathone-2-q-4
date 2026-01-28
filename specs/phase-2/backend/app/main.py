@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .db import create_db_and_tables
+from ..db import create_db_and_tables
 
 app = FastAPI()
 
@@ -9,4 +9,4 @@ def on_startup():
 
 @app.get("/")
 def read_root():
-    return {"message": "Backend is running"}
+    return {"message": "Backend is running - Phase 2 Complete"}

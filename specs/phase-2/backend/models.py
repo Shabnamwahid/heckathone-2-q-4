@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 import uuid
 from datetime import datetime
@@ -12,6 +12,7 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str = Field(max_length=255)
+    todos: Optional[list['Task']] = Relationship(back_populates="user")
 
 
 class UserCreate(UserBase):
@@ -22,13 +23,14 @@ class TaskBase(SQLModel):
     title: str = Field(min_length=1)
     description: Optional[str] = Field(default=None, max_length=500)
     completed: bool = Field(default=False)
-    user_id: str = Field(max_length=255)  # From JWT token
+    user_id: uuid.UUID = Field(foreign_key="user.id")
 
 
 class Task(TaskBase, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    user: Optional[User] = Relationship(back_populates="todos")
 
 
 class TaskCreate(TaskBase):

@@ -3,8 +3,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 from jwt.exceptions import InvalidTokenError
-from config import settings  # Changed to absolute import
+from .config import settings
 from typing import Dict, Any
+from .models import User
+from sqlmodel import Session, select
+from .db import get_session
 
 security = HTTPBearer()
 
@@ -30,6 +33,17 @@ async def get_current_user(token: HTTPAuthorizationCredentials = Depends(securit
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
+
+        # Verify user exists in database
+        session_gen = get_session()
+        session = next(session_gen)
+        try:
+            user = session.exec(select(User).where(User.id == user_id)).first()
+            if not user:
+                raise credentials_exception
+        finally:
+            session.close()
+
         return {"user_id": user_id}
     except InvalidTokenError:
         raise credentials_exception

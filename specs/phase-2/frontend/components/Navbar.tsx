@@ -1,10 +1,28 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is logged in by checking for token in localStorage
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    // Remove token from localStorage
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    // Redirect to home page
+    router.push('/');
+    router.refresh(); // Refresh to update navbar state
+  };
 
   return (
     <nav className="bg-white shadow-md">
@@ -15,23 +33,36 @@ export default function Navbar() {
               TodoApp
             </Link>
           </div>
-          
+
           {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/" className="text-gray-700 hover:text-indigo-600 font-medium">
               Home
             </Link>
-            <Link href="/tasks" className="text-gray-700 hover:text-indigo-600 font-medium">
-              Tasks
-            </Link>
-            <Link href="/login" className="text-gray-700 hover:text-indigo-600 font-medium">
-              Login
-            </Link>
-            <Link href="/register" className="text-gray-700 hover:text-indigo-600 font-medium">
-              Register
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link href="/tasks" className="text-gray-700 hover:text-indigo-600 font-medium">
+                  Tasks
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-gray-700 hover:text-indigo-600 font-medium"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-gray-700 hover:text-indigo-600 font-medium">
+                  Login
+                </Link>
+                <Link href="/register" className="text-gray-700 hover:text-indigo-600 font-medium">
+                  Register
+                </Link>
+              </>
+            )}
           </div>
-          
+
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
@@ -55,7 +86,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden">
@@ -67,27 +98,43 @@ export default function Navbar() {
             >
               Home
             </Link>
-            <Link
-              href="/tasks"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
-              onClick={() => setIsOpen(false)}
-            >
-              Tasks
-            </Link>
-            <Link
-              href="/login"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
-              onClick={() => setIsOpen(false)}
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
-              onClick={() => setIsOpen(false)}
-            >
-              Register
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href="/tasks"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Tasks
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
