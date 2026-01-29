@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from typing import List
-from ..models import Task, TaskCreate, TaskRead, TaskUpdate
-from ..dependencies import get_current_user
-from ..db import get_session
+from models import Task, TaskCreate, TaskRead, TaskUpdate
+from dependencies import get_current_user
+from db import get_session
 from uuid import UUID
 from datetime import datetime
 

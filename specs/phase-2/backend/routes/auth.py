@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from passlib.context import CryptContext
-from ..models import User, UserCreate
-from ..db import get_session
-from ..dependencies import create_access_token
+from models import User, UserCreate
+from db import get_session
+from dependencies import create_access_token
 from datetime import datetime
 
 router = APIRouter(prefix="/auth", tags=["auth"])

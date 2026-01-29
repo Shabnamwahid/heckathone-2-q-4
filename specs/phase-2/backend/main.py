@@ -3,11 +3,11 @@ from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
-# Import using absolute paths relative to the backend package
-from backend.db import create_db_and_tables
-from backend.routes import tasks
-from backend.routes import auth
-from backend.dependencies import get_current_user
+# Import using relative paths since we're in the backend package
+import db
+from routes import tasks
+from routes import auth
+from dependencies import get_current_user
 
 app = FastAPI(title="Multi-User Todo API", version="1.0.0")
 
@@ -36,7 +36,6 @@ async def jwt_auth_middleware(request: Request, call_next):
 
         # Verify the token by calling get_current_user
         try:
-            from backend.dependencies import get_current_user
             from fastapi.security import HTTPAuthorizationCredentials
             token = authorization.split(' ')[1]
             credentials = HTTPAuthorizationCredentials(scheme='Bearer', credentials=token)
@@ -49,7 +48,7 @@ async def jwt_auth_middleware(request: Request, call_next):
 
 @app.on_event("startup")
 def startup_event():
-    create_db_and_tables()
+    db.create_db_and_tables()
 
 # Include auth and task routes
 app.include_router(auth.router, prefix="/auth", tags=["auth"])

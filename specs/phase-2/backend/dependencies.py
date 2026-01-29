@@ -3,11 +3,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 from jwt.exceptions import InvalidTokenError
-from .config import settings
+from config import settings
 from typing import Dict, Any
-from .models import User
+from models import User
 from sqlmodel import Session, select
-from .db import get_session
+from db import get_session
 
 security = HTTPBearer()
 
