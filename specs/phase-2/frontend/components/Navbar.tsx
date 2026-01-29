@@ -25,38 +25,38 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex justify-between h-20 items-center">
           <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-indigo-600">
-              TodoApp
+            <Link href="/" className="text-2xl font-bold text-blue-600">
+              TodoFlow
             </Link>
           </div>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-indigo-600 font-medium">
+          <div className="hidden md:flex items-center space-x-10">
+            <Link href="/" className="text-slate-700 hover:text-blue-600 font-medium text-lg">
               Home
             </Link>
             {isLoggedIn ? (
               <>
-                <Link href="/tasks" className="text-gray-700 hover:text-indigo-600 font-medium">
+                <Link href="/tasks" className="text-slate-700 hover:text-blue-600 font-medium text-lg">
                   Tasks
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-700 hover:text-indigo-600 font-medium"
+                  className="text-slate-700 hover:text-blue-600 font-medium text-lg"
                 >
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-gray-700 hover:text-indigo-600 font-medium">
+                <Link href="/login" className="text-slate-700 hover:text-blue-600 font-medium text-lg">
                   Login
                 </Link>
-                <Link href="/register" className="text-gray-700 hover:text-indigo-600 font-medium">
+                <Link href="/register" className="text-slate-700 hover:text-blue-600 font-medium text-lg">
                   Register
                 </Link>
               </>
@@ -67,10 +67,10 @@ export default function Navbar() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-indigo-600 focus:outline-none"
+              className="inline-flex items-center justify-center p-3 rounded-lg text-slate-700 hover:text-blue-600 focus:outline-none"
             >
               <svg
-                className="h-6 w-6"
+                className="h-7 w-7"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -90,10 +90,10 @@ export default function Navbar() {
       {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
+          <div className="px-4 pt-4 pb-5 space-y-3 bg-white shadow-xl">
             <Link
               href="/"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+              className="block px-4 py-3 rounded-xl text-lg font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50"
               onClick={() => setIsOpen(false)}
             >
               Home
@@ -102,7 +102,7 @@ export default function Navbar() {
               <>
                 <Link
                   href="/tasks"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  className="block px-4 py-3 rounded-xl text-lg font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50"
                   onClick={() => setIsOpen(false)}
                 >
                   Tasks
@@ -112,7 +112,7 @@ export default function Navbar() {
                     handleLogout();
                     setIsOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  className="block w-full text-left px-4 py-3 rounded-xl text-lg font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50"
                 >
                   Logout
                 </button>
@@ -121,14 +121,14 @@ export default function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  className="block px-4 py-3 rounded-xl text-lg font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50"
                   onClick={() => setIsOpen(false)}
                 >
                   Login
                 </Link>
                 <Link
                   href="/register"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50"
+                  className="block px-4 py-3 rounded-xl text-lg font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50"
                   onClick={() => setIsOpen(false)}
                 >
                   Register
