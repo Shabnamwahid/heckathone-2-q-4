@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import apiClient from '@/lib/api';
+import { tasksAPI } from '@/lib/api';
 
 interface Task {
   id?: string;
@@ -24,7 +24,7 @@ export default function TaskForm({ task, onSave, onCancel }: TaskFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim()) {
       setError('Title is required');
       return;
@@ -33,22 +33,22 @@ export default function TaskForm({ task, onSave, onCancel }: TaskFormProps) {
     try {
       if (task && task.id) {
         // Update existing task
-        await apiClient.put(`/api/tasks/${task.id}`, {
+        await tasksAPI.update(task.id, {
           title,
           description,
           completed
         });
       } else {
         // Create new task
-        await apiClient.post('/api/tasks', {
+        await tasksAPI.create({
           title,
           description,
           completed
         });
       }
-      
+
       onSave();
-    } catch (err) {
+    } catch (err: any) {
       setError(task ? 'Failed to update task' : 'Failed to create task');
       console.error(`Error ${task ? 'updating' : 'creating'} task:`, err);
     }

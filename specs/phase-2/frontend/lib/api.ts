@@ -40,14 +40,14 @@ const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 // Auth API functions
 export const authAPI = {
   login: async (email: string, password: string) => {
-    return apiCall('/auth/auth/login', {
+    return apiCall('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
   },
 
   register: async (email: string, password: string) => {
-    return apiCall('/auth/auth/register', {
+    return apiCall('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -81,7 +81,7 @@ export const tasksAPI = {
   },
 
   toggleComplete: async (taskId: string) => {
-    return apiCall(`/api/tasks/${taskId}/complete`, {
+    return apiCall(`/api/tasks/${taskId}/toggle`, {
       method: 'PATCH',
     });
   },

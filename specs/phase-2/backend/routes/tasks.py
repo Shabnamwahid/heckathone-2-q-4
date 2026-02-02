@@ -109,7 +109,7 @@ async def delete_task(
     session.delete(task)
     session.commit()
 
-@router.patch("/tasks/{task_id}/complete", response_model=TaskRead)
+@router.patch("/tasks/{task_id}/toggle", response_model=TaskRead)
 async def toggle_task_completion(
     task_id: UUID,
     current_user: dict = Depends(get_current_user),

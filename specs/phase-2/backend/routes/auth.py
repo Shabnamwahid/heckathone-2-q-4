@@ -10,7 +10,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-@router.post("/auth/register")
+@router.post("/register")
 def register(user: UserCreate, session: Session = Depends(get_session)):
     existing = session.exec(select(User).where(User.email == user.email)).first()
     if existing:
@@ -23,7 +23,7 @@ def register(user: UserCreate, session: Session = Depends(get_session)):
     session.refresh(db_user)
     return {"id": db_user.id, "email": db_user.email, "created_at": datetime.utcnow()}
 
-@router.post("/auth/login")
+@router.post("/login")
 def login(user: UserCreate, session: Session = Depends(get_session)):
     db_user = session.exec(select(User).where(User.email == user.email)).first()
     if not db_user or not pwd_context.verify(user.password, db_user.hashed_password):
