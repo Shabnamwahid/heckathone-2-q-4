@@ -1,8 +1,4 @@
-'use client';
-
-import Navbar from '../components/Navbar';
-import { AuthProvider } from './context/AuthContext';
-import { TasksProvider } from './context/TasksContext';
+import ClientWrapper from './ClientWrapper';
 import './globals.css';
 
 export const metadata = {
@@ -20,13 +16,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-        <AuthProvider>
-          <TasksProvider>
-            <Navbar />
-            <main>{children}</main>
-          </TasksProvider>
-        </AuthProvider>
+      <body className="min-h-screen antialiased bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 text-zinc-900 dark:text-zinc-100">
+        <ClientWrapper>{children}</ClientWrapper>
       </body>
     </html>
   )

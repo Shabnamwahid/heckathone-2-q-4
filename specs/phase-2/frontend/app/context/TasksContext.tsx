@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { tasksAPI } from '../lib/api';
+import { tasksAPI } from '../../lib/api';
 
 interface Task {
   id: string;
