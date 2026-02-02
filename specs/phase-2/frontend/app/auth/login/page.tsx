@@ -21,8 +21,8 @@ export default function LoginPage() {
       const response = await authAPI.login(email, password);
 
       // Store the JWT token in localStorage
-      if (response.data.access_token) {
-        localStorage.setItem('jwt_token', response.data.access_token);
+      if (response.access_token) {
+        localStorage.setItem('jwt_token', response.access_token);
         // Redirect to dashboard
         router.push('/dashboard');
         router.refresh();
