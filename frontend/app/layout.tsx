@@ -1,10 +1,4 @@
 import './globals.css';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'TodoFlow',
-  description: 'A modern todo application with authentication',
-};
 
 export default function RootLayout({
   children,
@@ -12,8 +6,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-background antialiased">
+    <html lang="en">
+      <body className="bg-gray-900 text-white min-h-screen">
         {children}
       </body>
     </html>
