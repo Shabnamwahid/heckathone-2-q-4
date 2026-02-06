@@ -15,7 +15,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.4.0",
-    "lucide-react": "^0.7.0"
+    "lucide-react": "^0.563.0"
   },
   "devDependencies": {
     "@types/node": "^20",
