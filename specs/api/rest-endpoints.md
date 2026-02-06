@@ -1,101 +1,102 @@
-# REST API Endpoints Specification - JWT-Based User Isolation
+# REST API Endpoints Specification
 
-## Authentication & User Isolation
-All endpoints require a valid JWT token in the Authorization header to enforce strict user isolation:
-```
-Authorization: Bearer <jwt_token>
-```
+## Purpose
+This document specifies all REST API endpoints for the TodoFlow application. It outlines the authentication requirements, request/response formats, and error handling for each endpoint.
 
-Each JWT token contains the authenticated user's unique identifier (user_id) which is used to:
-- Filter all data queries to return only records belonging to the authenticated user
-- Prevent unauthorized access to other users' data
-- Ensure complete data isolation between users
+## Requirements
+- All endpoints must follow RESTful principles
+- Authentication required for all protected endpoints
+- Consistent request/response formats
+- Proper HTTP status codes
+- Comprehensive error handling
 
-## JWT Token Validation
-- All API requests must include a valid JWT token issued by Better Auth
-- FastAPI middleware validates token authenticity and expiration
-- User ID is extracted from JWT claims for data access control
-- Requests with invalid or expired tokens return 401 Unauthorized
+## Implementation Details
+The API follows RESTful conventions with proper authentication using JWT tokens. All protected endpoints require a valid JWT token in the Authorization header. The API supports standard CRUD operations with appropriate HTTP methods and status codes.
 
-## Endpoints
+## Validation Criteria
+- All endpoints return appropriate HTTP status codes
+- Authentication is enforced on protected endpoints
+- Request/response formats are consistent
+- Error responses follow standard format
+- All validation rules are properly enforced
 
-### 1. Get User Tasks
-- **Method**: GET
-- **Path**: `/api/tasks`
-- **Description**: Retrieve all tasks for the authenticated user only
-- **JWT Enforcement**: Query filters tasks by user_id from JWT claims
-- **Query Parameters**:
-  - `limit` (optional): Number of tasks to return (default: 10)
-  - `offset` (optional): Number of tasks to skip (for pagination)
-  - `sort` (optional): Sort by field (created_at, updated_at, title)
-  - `order` (optional): Sort order (asc, desc)
-  - `completed` (optional): Filter by completion status (true, false)
-- **Response**: Array of task objects belonging to authenticated user
-- **Status Codes**: 200 (success), 401 (unauthorized)
+## Authentication Endpoints
+- `POST /auth/login` - Authenticate user and return JWT token
+  - Request: { email: string, password: string }
+  - Response: { access_token: string, token_type: string }
+  - Status: 200 OK
+  - Auth: None
 
-### 2. Create Task
-- **Method**: POST
-- **Path**: `/api/tasks`
-- **Description**: Create a new task assigned to the authenticated user
-- **JWT Enforcement**: Task is automatically associated with user_id from JWT claims
-- **Request Body**:
-```json
-{
-  "title": "Task title (required)",
-  "description": "Task description (optional)",
-  "completed": false
-}
-```
-- **Response**: Created task object with assigned user_id
-- **Status Codes**: 201 (created), 400 (bad request), 401 (unauthorized)
+- `POST /auth/register` - Register new user and return JWT token
+  - Request: { email: string, password: string, first_name?: string, last_name?: string }
+  - Response: { access_token: string, token_type: string }
+  - Status: 200 OK
+  - Auth: None
 
-### 3. Get Specific Task
-- **Method**: GET
-- **Path**: `/api/tasks/{task_id}`
-- **Description**: Retrieve a specific task by ID, ensuring it belongs to the authenticated user
-- **JWT Enforcement**: Validates that task.user_id matches user_id from JWT claims
-- **Parameters**: task_id (path parameter)
-- **Response**: Single task object if it belongs to authenticated user
-- **Status Codes**: 200 (success), 401 (unauthorized), 404 (not found or not owned by user)
+- `POST /auth/logout` - Invalidate user session
+  - Headers: Authorization: Bearer {token}
+  - Response: { message: string }
+  - Status: 200 OK
+  - Auth: Required
 
-### 4. Update Task
-- **Method**: PUT
-- **Path**: `/api/tasks/{task_id}`
-- **Description**: Update an existing task, validating ownership by authenticated user
-- **JWT Enforcement**: Verifies task.user_id matches user_id from JWT claims before updating
-- **Parameters**: task_id (path parameter)
-- **Request Body**:
-```json
-{
-  "title": "Updated task title (optional)",
-  "description": "Updated task description (optional)",
-  "completed": true
-}
-```
-- **Response**: Updated task object if owned by authenticated user
-- **Status Codes**: 200 (success), 400 (bad request), 401 (unauthorized), 404 (not found or not owned by user)
+- `GET /auth/me` - Get authenticated user information
+  - Headers: Authorization: Bearer {token}
+  - Response: User object without password
+  - Status: 200 OK
+  - Auth: Required
 
-### 5. Toggle Task Completion
-- **Method**: PATCH
-- **Path**: `/api/tasks/{task_id}/toggle`
-- **Description**: Toggle the completion status of a task, validating ownership by authenticated user
-- **JWT Enforcement**: Confirms task.user_id matches user_id from JWT claims before toggling
-- **Parameters**: task_id (path parameter)
-- **Response**: Updated task object if owned by authenticated user
-- **Status Codes**: 200 (success), 401 (unauthorized), 404 (not found or not owned by user)
+## Task Endpoints
+- `GET /api/tasks` - Retrieve all tasks for authenticated user
+  - Headers: Authorization: Bearer {token}
+  - Response: Array of Task objects
+  - Status: 200 OK
+  - Auth: Required
 
-### 6. Delete Task
-- **Method**: DELETE
-- **Path**: `/api/tasks/{task_id}`
-- **Description**: Delete a specific task, validating ownership by authenticated user
-- **JWT Enforcement**: Ensures task.user_id matches user_id from JWT claims before deletion
-- **Parameters**: task_id (path parameter)
-- **Response**: Empty body on successful deletion
-- **Status Codes**: 204 (deleted), 401 (unauthorized), 404 (not found or not owned by user)
+- `POST /api/tasks` - Create a new task
+  - Headers: Authorization: Bearer {token}
+  - Body: { title: string, description?: string, completed?: boolean }
+  - Response: Created Task object
+  - Status: 201 Created
+  - Auth: Required
 
-## User Isolation Guarantees
-- Users can only access, modify, or delete their own tasks
-- Attempting to access another user's task results in 404 Not Found
-- No user can view another user's tasks through any endpoint
-- All database queries are filtered by the authenticated user's ID
-- FastAPI middleware enforces user ownership validation on every request
+- `GET /api/tasks/{id}` - Retrieve a specific task
+  - Headers: Authorization: Bearer {token}
+  - Response: Task object
+  - Status: 200 OK
+  - Auth: Required
+
+- `PUT /api/tasks/{id}` - Update a specific task
+  - Headers: Authorization: Bearer {token}
+  - Body: { title?: string, description?: string, completed?: boolean }
+  - Response: Updated Task object
+  - Status: 200 OK
+  - Auth: Required
+
+- `DELETE /api/tasks/{id}` - Delete a specific task
+  - Headers: Authorization: Bearer {token}
+  - Response: Empty
+  - Status: 204 No Content
+  - Auth: Required
+
+- `PATCH /api/tasks/{id}/toggle` - Toggle task completion status
+  - Headers: Authorization: Bearer {token}
+  - Response: Updated Task object
+  - Status: 200 OK
+  - Auth: Required
+
+## Request Format
+- Content-Type: application/json
+- Authorization header with JWT token for protected endpoints
+
+## Response Format
+- Content-Type: application/json
+- Standard response format with data and optional message
+- Proper HTTP status codes
+
+## Error Responses
+- 400 Bad Request: Invalid request format
+- 401 Unauthorized: Missing or invalid JWT token
+- 403 Forbidden: Access to resource not permitted
+- 404 Not Found: Resource doesn't exist
+- 422 Unprocessable Entity: Validation errors
+- 500 Internal Server Error: Unexpected server error

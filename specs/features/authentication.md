@@ -1,7 +1,7 @@
-# Authentication Feature Specification - Phase II
+# Authentication Feature Specification
 
-## Overview
-This document specifies the authentication system for Phase II of the "Evolution of Todo" project. The authentication system will be implemented using Better Auth with JWT tokens and verified through FastAPI backend integration.
+## Purpose
+This document specifies the authentication system for the TodoFlow application. It outlines the requirements, implementation details, and validation criteria for user authentication and authorization.
 
 ## Requirements
 
@@ -28,28 +28,41 @@ This document specifies the authentication system for Phase II of the "Evolution
 - Proper error handling for authentication failures
 - Secure storage of tokens in browser (HTTP-only cookies or secure localStorage)
 
+## Implementation Details
+The authentication system implements JWT-based authentication with secure password hashing. The system integrates with both the frontend and backend to provide seamless user authentication and authorization. Registration, login, and logout flows are implemented with proper security measures.
+
+## Validation Criteria
+- Users can successfully register and login
+- JWT tokens are properly generated and validated
+- Protected routes reject unauthorized requests
+- Authentication state persists correctly in the frontend
+- All security requirements are met
+- FastAPI properly verifies tokens from authentication system
+- Logout functionality clears all authentication state
+
+## Overview
+This document specifies the authentication system for the TodoFlow application. The authentication system will be implemented using JWT tokens and verified through FastAPI backend integration.
+
 ## Technology Stack
-- **Authentication Library**: Better Auth
-- **Token Standard**: JWT (JSON Web Tokens)
+- **Authentication Method**: JWT (JSON Web Tokens)
 - **Backend Framework**: FastAPI with Python
 - **Frontend Framework**: Next.js with TypeScript
 - **Database**: Neon Serverless PostgreSQL
+- **Password Hashing**: bcrypt
 
 ## Implementation Details
 
-### Better Auth Configuration
-- Configure Better Auth with email/password authentication
-- Set up JWT token generation and validation
+### JWT Configuration
+- Configure JWT token generation and validation
 - Define user schema with required fields (email, password, etc.)
-- Configure email verification workflow
 - Set token expiration policies
+- Implement refresh token mechanism
 
 ### FastAPI Integration
 - Implement JWT token verification middleware
 - Create protected API endpoints that validate user authentication
 - Extract user information from JWT claims
 - Handle authentication errors gracefully
-- Validate tokens against Better Auth standards
 
 ### Next.js Frontend Integration
 - Implement login and registration forms
@@ -63,8 +76,6 @@ This document specifies the authentication system for Phase II of the "Evolution
 - `POST /auth/login` - Authenticate user and return JWT token
 - `POST /auth/logout` - Invalidate user session
 - `POST /auth/refresh` - Refresh expired JWT token
-- `POST /auth/forgot-password` - Initiate password reset
-- `POST /auth/reset-password` - Complete password reset
 - `GET /auth/me` - Get authenticated user information
 
 ## Verification Methods
@@ -73,12 +84,3 @@ This document specifies the authentication system for Phase II of the "Evolution
 - End-to-end tests for complete authentication flow
 - Token validation tests to ensure security
 - Error condition testing for failed authentication
-
-## Validation Criteria
-- Users can successfully register and login
-- JWT tokens are properly generated and validated
-- Protected routes reject unauthorized requests
-- Authentication state persists correctly in the frontend
-- All security requirements are met
-- FastAPI properly verifies tokens from Better Auth
-- Logout functionality clears all authentication state
