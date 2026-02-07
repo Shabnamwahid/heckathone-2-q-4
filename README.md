@@ -192,21 +192,60 @@ The frontend has been built with TypeScript for type safety and includes respons
 
 ## 🚀 Production Deployment
 
-### Backend
-For production deployment, consider:
-- Using environment variables for configuration
-- Setting up a reverse proxy (nginx)
-- Using a process manager (pm2, supervisor)
-- Setting up proper logging
-- Using HTTPS
-- Regular security updates
+### Frontend (Vercel)
 
-### Frontend
-The Next.js application can be built for production using:
-```bash
-npm run build
-npm start
-```
+1. **Prerequisites**:
+   - Create a Vercel account at https://vercel.com
+   - Install Vercel CLI: `npm install -g vercel`
+
+2. **Deploy to Vercel**:
+   - Navigate to the frontend directory: `cd frontend`
+   - Run `vercel` command and follow the prompts
+   - Set the environment variable:
+     - `NEXT_PUBLIC_API_URL`: URL of your deployed backend API (e.g., https://your-backend-app.herokuapp.com)
+
+3. **Environment Variables**:
+   - In Vercel dashboard, go to your project settings
+   - Add the environment variable: `NEXT_PUBLIC_API_URL` with the value pointing to your backend API
+
+### Backend (Heroku/Railway/AWS)
+
+The backend needs to be deployed separately. Here's an example for Heroku:
+
+1. **Prerequisites**:
+   - Create a Heroku account
+   - Install Heroku CLI
+
+2. **Deploy to Heroku**:
+   ```bash
+   heroku create your-app-name
+   heroku config:set DATABASE_URL=your_postgres_database_url
+   heroku config:set BETTER_AUTH_SECRET=your_super_secret_jwt_key
+   heroku config:set FRONTEND_URL=https://your-frontend-url.vercel.app
+   git push heroku main
+   ```
+
+### Alternative: Deploy Both Together
+
+If you prefer to deploy both frontend and backend together, you can:
+
+1. Build the Next.js app for production:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+
+2. Configure the backend to serve static files from the built Next.js app
+
+## 🔄 Environment Variables for Production
+
+### Frontend (for Vercel deployment)
+- `NEXT_PUBLIC_API_URL`: The URL of your deployed backend (e.g., https://your-backend.herokuapp.com)
+
+### Backend (for separate deployment)
+- `DATABASE_URL`: PostgreSQL database connection string
+- `BETTER_AUTH_SECRET`: Secret key for JWT signing (use a strong random value)
+- `FRONTEND_URL`: URL of your deployed frontend application
 
 ## 🔐 Security Features
 
