@@ -1,6 +1,28 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/tasks');
+    }
+  }, [isAuthenticated, router]);
+
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Redirecting to dashboard...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -46,7 +68,7 @@ export default function Home() {
               Organize your tasks efficiently with our intuitive interface. Create, update, and manage your to-dos with ease.
             </p>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center mb-4">
               <div className="bg-green-100 p-3 rounded-full">
@@ -60,7 +82,7 @@ export default function Home() {
               Your data is protected with industry-standard security measures. Rest assured that your tasks are private and secure.
             </p>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center mb-4">
               <div className="bg-purple-100 p-3 rounded-full">
@@ -75,7 +97,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        
+
         <div className="mt-16 bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="px-4 py-5 sm:p-6">
             <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">How TodoFlow Works</h2>
@@ -87,7 +109,7 @@ export default function Home() {
                 <h3 className="mt-4 text-lg font-medium text-gray-900">Sign Up</h3>
                 <p className="mt-2 text-gray-600">Create your account in seconds</p>
               </div>
-              
+
               <div className="text-center">
                 <div className="mx-auto bg-blue-100 rounded-full p-4 w-16 h-16 flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-xl">2</span>
@@ -95,7 +117,7 @@ export default function Home() {
                 <h3 className="mt-4 text-lg font-medium text-gray-900">Add Tasks</h3>
                 <p className="mt-2 text-gray-600">Create and organize your tasks</p>
               </div>
-              
+
               <div className="text-center">
                 <div className="mx-auto bg-blue-100 rounded-full p-4 w-16 h-16 flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-xl">3</span>
@@ -103,7 +125,7 @@ export default function Home() {
                 <h3 className="mt-4 text-lg font-medium text-gray-900">Track Progress</h3>
                 <p className="mt-2 text-gray-600">Monitor your productivity</p>
               </div>
-              
+
               <div className="text-center">
                 <div className="mx-auto bg-blue-100 rounded-full p-4 w-16 h-16 flex items-center justify-center">
                   <span className="text-blue-600 font-bold text-xl">4</span>
