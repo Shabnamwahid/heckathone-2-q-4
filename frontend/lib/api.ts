@@ -1,88 +1,70 @@
 // lib/api.ts
+import axios from 'axios';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-// Helper function to get token from localStorage
-const getToken = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('token');
-  }
-  return null;
-};
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-// Generic API call function with error handling
-const apiCall = async (endpoint: string, options: RequestInit = {}) => {
-  const url = `${API_BASE_URL}${endpoint}`;
-
-  const config: RequestInit = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-    ...options,
-  };
-
-  // Add authorization header if token exists
-  const token = getToken();
-  if (token) {
-    (config.headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(url, config);
-
-  if (!response.ok) {
-    let errorMessage = `HTTP error! status: ${response.status}`;
-    try {
-      const errorData = await response.json();
-      errorMessage = errorData.detail || errorData.message || errorMessage;
-    } catch (e) {
-      // If response is not JSON, use status text or default message
-      errorMessage = response.statusText || errorMessage;
+// Request interceptor to add auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    throw new Error(errorMessage);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  return response.json();
-};
+// Response interceptor to handle token expiration
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear token and redirect to login
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
 
 // Auth API functions
 export const authAPI = {
-  login: async (email: string, password: string) => {
-    return apiCall('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
+  register: (userData: { full_name: string; email: string; password: string }) =>
+    api.post('/auth/register', userData),
+
+  login: (credentials: { email: string; password: string }) =>
+    api.post('/auth/login', credentials),
+
+  logout: () => {
+    localStorage.removeItem('token');
   },
+
+  getProfile: () => api.get('/auth/profile'),
 };
 
 // Tasks API functions
 export const tasksAPI = {
-  getAll: async () => {
-    return apiCall('/api/tasks');
-  },
+  getTasks: () => api.get('/api/tasks'),
 
-  create: async (taskData: { title: string; description?: string; completed?: boolean }) => {
-    return apiCall('/api/tasks', {
-      method: 'POST',
-      body: JSON.stringify(taskData),
-    });
-  },
+  createTask: (taskData: { title: string; description: string }) =>
+    api.post('/api/tasks', taskData),
 
-  update: async (taskId: string, taskData: Partial<{ title: string; description?: string; completed?: boolean }>) => {
-    return apiCall(`/api/tasks/${taskId}`, {
-      method: 'PUT',
-      body: JSON.stringify(taskData),
-    });
-  },
+  updateTask: (taskId: string, taskData: { title?: string; description?: string }) =>
+    api.put(`/api/tasks/${taskId}`, taskData),
 
-  delete: async (taskId: string) => {
-    return apiCall(`/api/tasks/${taskId}`, {
-      method: 'DELETE',
-    });
-  },
+  deleteTask: (taskId: string) => api.delete(`/api/tasks/${taskId}`),
 
-  toggleComplete: async (taskId: string) => {
-    return apiCall(`/api/tasks/${taskId}/toggle`, {
-      method: 'PATCH',
-    });
-  },
+  toggleTask: (taskId: string) => api.patch(`/api/tasks/${taskId}/toggle`),
 };

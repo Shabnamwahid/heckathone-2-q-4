@@ -11,11 +11,14 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
+    full_name: str = Field(max_length=255)
     hashed_password: str = Field(max_length=255)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
     todos: Optional[list['Task']] = Relationship(back_populates="user")
 
 
 class UserCreate(UserBase):
+    full_name: str = Field(max_length=255)
     password: str = Field(min_length=6, max_length=128)
 
 
