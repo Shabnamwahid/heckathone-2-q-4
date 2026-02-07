@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "rootDirectory": "frontend",
   "framework": "nextjs",
   "settings": {
     "frameworkVersion": "14.x",
