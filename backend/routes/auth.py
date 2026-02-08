@@ -23,7 +23,10 @@ async def register(user: UserCreate, session: AsyncSession = Depends(get_async_s
     session.add(db_user)
     await session.commit()
     await session.refresh(db_user)
-    return {"id": db_user.id, "email": db_user.email, "full_name": db_user.full_name, "created_at": db_user.created_at}
+    
+    # Create access token for the new user
+    token = create_access_token({"sub": str(db_user.id)})
+    return {"access_token": token, "token_type": "bearer", "user": {"id": db_user.id, "email": db_user.email, "full_name": db_user.full_name}}
 
 from pydantic import BaseModel
 
