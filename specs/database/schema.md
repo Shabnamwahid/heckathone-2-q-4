@@ -1,66 +1,51 @@
-# Database Schema Specification
+# Database Schema
 
-## Purpose
-This document specifies the database schema for the TodoFlow application. It outlines the structure of the database tables, relationships, indexes, and constraints required for the application.
+This document describes the database schema for the TodoFlow application.
 
-## Requirements
-- Use PostgreSQL as the database engine
-- Implement proper relationships between entities
-- Include appropriate indexes for performance
-- Enforce data integrity through constraints
-- Support user authentication and task management features
+## Database System
 
-## Implementation Details
-The database schema uses SQLModel with PostgreSQL as the backend database. The schema includes tables for users and tasks with proper relationships and constraints. UUIDs are used for primary keys to ensure global uniqueness.
-
-## Validation Criteria
-- All tables have appropriate primary keys
-- Foreign key relationships are properly defined
-- Required constraints are in place
-- Indexes are created for frequently queried columns
-- Data types are appropriate for each field
-
-## Overview
-The database schema defines the structure for the TodoFlow application using SQLModel with PostgreSQL as the backend database.
+- **Primary Database**: PostgreSQL
+- **Alternative**: Neon Serverless PostgreSQL
+- **ORM**: SQLModel (SQLAlchemy + Pydantic)
 
 ## Tables
 
-### users
-- id: UUID (Primary Key, Default: gen_random_uuid())
-- email: VARCHAR(255) (Unique, Not Null)
-- hashed_password: VARCHAR(255) (Not Null)
-- first_name: VARCHAR(100) (Optional)
-- last_name: VARCHAR(100) (Optional)
-- is_active: BOOLEAN (Default: True)
-- is_verified: BOOLEAN (Default: False)
-- created_at: TIMESTAMP (Default: CURRENT_TIMESTAMP)
-- updated_at: TIMESTAMP (Default: CURRENT_TIMESTAMP)
+### Users Table
 
-### tasks
-- id: UUID (Primary Key, Default: gen_random_uuid())
-- title: VARCHAR(255) (Not Null)
-- description: TEXT (Optional)
-- completed: BOOLEAN (Default: False)
-- user_id: UUID (Foreign Key: users.id, Not Null)
-- created_at: TIMESTAMP (Default: CURRENT_TIMESTAMP)
-- updated_at: TIMESTAMP (Default: CURRENT_TIMESTAMP)
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, NOT NULL | Unique identifier for the user |
+| email | VARCHAR(255) | UNIQUE, NOT NULL | User's email address |
+| full_name | VARCHAR(255) | | User's full name |
+| hashed_password | VARCHAR(255) | NOT NULL | Hashed password using bcrypt |
+| created_at | TIMESTAMP | DEFAULT NOW() | Account creation timestamp |
+| updated_at | TIMESTAMP | DEFAULT NOW() | Last update timestamp |
+
+### Tasks Table
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| id | UUID | PRIMARY KEY, NOT NULL | Unique identifier for the task |
+| title | VARCHAR(255) | NOT NULL | Task title |
+| description | TEXT | | Task description |
+| completed | BOOLEAN | DEFAULT FALSE | Completion status |
+| user_id | UUID | FOREIGN KEY, NOT NULL | Reference to the user who owns the task |
+| created_at | TIMESTAMP | DEFAULT NOW() | Task creation timestamp |
+| updated_at | TIMESTAMP | DEFAULT NOW() | Last update timestamp |
 
 ## Relationships
-- One user can have many tasks (One-to-Many)
-- Tasks are linked to users via user_id foreign key
+
+- **Users to Tasks**: One-to-Many (One user can have many tasks)
+- **Foreign Key Constraint**: Tasks.user_id references Users.id
 
 ## Indexes
-- Index on users.email for faster login
-- Index on tasks.user_id for efficient user-based queries
-- Index on tasks.completed for filtering completed tasks
 
-## Constraints
-- Email uniqueness in users table
-- Foreign key constraint between tasks.user_id and users.id
-- Not null constraints on required fields
-- Check constraint on email format (optional)
+- Users table: Index on email column for efficient lookups
+- Tasks table: Index on user_id column for efficient filtering by user
+- Tasks table: Composite index on (user_id, completed) for efficient queries
 
-## Migration Strategy
-- Use Alembic for database migrations
-- Initial migration creates both tables
-- Future migrations for schema changes
+## Security Considerations
+
+- All data access is filtered by user_id to ensure data isolation
+- No cross-user data access is permitted
+- Soft deletes are not implemented; hard deletes are used for task deletion

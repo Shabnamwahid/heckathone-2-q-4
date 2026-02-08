@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { authClient } from './auth-client';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
@@ -9,11 +10,13 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to add token
+// Request interceptor to add Better Auth token
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+  async (config) => {
+    const session = await authClient.getSession();
+    if (session?.session?.token) {
+      config.headers.Authorization = `Bearer ${session.session.token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -24,31 +27,21 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
+      // Sign out user if unauthorized
+      authClient.signOut();
       window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
 
-// Auth API
-interface RegisterData { full_name: string; email: string; password: string; }
-interface LoginData { email: string; password: string; }
-
-export const authAPI = {
-  register: (data: RegisterData) => api.post('/auth/register', data),
-  login: (data: LoginData) => api.post('/auth/login', data),
-  logout: () => { localStorage.removeItem('token'); },
-  getProfile: () => api.get('/auth/profile'),
-};
-
-// Tasks API
+// Tasks API - Updated to use user_id in path
 export const tasksAPI = {
-  getTasks: () => api.get('/tasks'),
-  createTask: (taskData: any) => api.post('/tasks', taskData),
-  updateTask: (taskId: string, taskData: any) => api.put(`/tasks/${taskId}`, taskData),
-  deleteTask: (taskId: string) => api.delete(`/tasks/${taskId}`),
-  toggleTask: (taskId: string) => api.patch(`/tasks/${taskId}/toggle`),
+  getTasks: (userId: string) => api.get(`/api/${userId}/tasks`),
+  createTask: (userId: string, taskData: any) => api.post(`/api/${userId}/tasks`, taskData),
+  updateTask: (userId: string, taskId: string, taskData: any) => api.put(`/api/${userId}/tasks/${taskId}`, taskData),
+  deleteTask: (userId: string, taskId: string) => api.delete(`/api/${userId}/tasks/${taskId}`),
+  toggleTask: (userId: string, taskId: string) => api.patch(`/api/${userId}/tasks/${taskId}/toggle`),
 };
 
 export default api;

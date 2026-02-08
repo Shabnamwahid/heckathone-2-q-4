@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { authAPI } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,10 +37,7 @@ export default function RegisterPage() {
     setError('');
 
     try {
-      const response = await authAPI.register({ full_name: fullName, email, password });
-      const access_token = response.data.access_token;
-      
-      localStorage.setItem('token', access_token);
+      await register(fullName, email, password);
       router.push('/dashboard');
     } catch (err) {
       setError('Registration failed. Please try again.');
@@ -54,9 +52,9 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
-          
+
           {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-          
+
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <input
@@ -98,15 +96,15 @@ export default function RegisterPage() {
                 required
               />
             </div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:opacity-50"
             >
               {loading ? 'Registering...' : 'Register'}
             </button>
           </form>
-          
+
           <div className="mt-4 text-center">
             <p>Already have an account? <Link href="/login" className="text-blue-500">Login</Link></p>
           </div>

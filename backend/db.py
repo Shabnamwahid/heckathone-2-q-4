@@ -2,18 +2,11 @@ from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from typing import AsyncGenerator
-import os
-from dotenv import load_dotenv
+from config import settings
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
-# Load .env
-load_dotenv()
-
-# Fetch DATABASE_URL from .env
-DATABASE_URL = os.getenv("DATABASE_URL")
-
 # Remove sslmode parameter from DATABASE_URL to prevent asyncpg conflicts
-parsed_url = urlparse(DATABASE_URL)
+parsed_url = urlparse(settings.database_url)
 query_params = parse_qs(parsed_url.query)
 # Remove sslmode from query parameters
 query_params.pop('sslmode', None)

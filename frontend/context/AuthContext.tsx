@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import api from '../lib/api'; // Ensure api.ts is correct
+import { authClient } from '../lib/auth-client';
 
 interface User {
   id: string;
@@ -14,7 +14,7 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (fullName: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -35,30 +35,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Load token & user from localStorage on mount
+  // Load token & user from Better Auth on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+    const initializeAuth = async () => {
+      try {
+        const session = await authClient.getSession();
+        if (session?.session) {
+          setToken(session.session.token);
+          setUser({
+            id: session.user.id,
+            email: session.user.email,
+            full_name: session.user.name || session.user.email,
+          });
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (storedToken) setToken(storedToken);
-    if (storedUser) setUser(JSON.parse(storedUser || 'null'));
-
-    setLoading(false);
+    initializeAuth();
   }, []);
 
   // ✅ LOGIN FUNCTION
   const login = async (email: string, password: string) => {
     try {
-      const response = await authAPI.login({ email, password });
-      const { access_token, user: userData } = response.data;
+      const response = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: '/dashboard',
+      });
 
-      localStorage.setItem('token', access_token);
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      setToken(access_token);
-      setUser(userData);
+      if (response?.session) {
+        setToken(response.session.token);
+        setUser({
+          id: response.user.id,
+          email: response.user.email,
+          full_name: response.user.name || response.user.email,
+        });
+      }
     } catch (error: any) {
-      console.error('Login error:', error.response?.data || error.message);
+      console.error('Login error:', error);
       throw error;
     }
   };
@@ -66,27 +84,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // ✅ REGISTER FUNCTION (auto login)
   const register = async (fullName: string, email: string, password: string) => {
     try {
-      const response = await authAPI.register({ full_name: fullName, email, password });
-      const { access_token, user: userData } = response.data;
+      const response = await authClient.signUp.email({
+        email,
+        password,
+        name: fullName,
+        callbackURL: '/dashboard',
+      });
 
-      // Save token & user to localStorage
-      localStorage.setItem('token', access_token);
-      localStorage.setItem('user', JSON.stringify(userData));
-
-      setToken(access_token);
-      setUser(userData);
+      if (response?.session) {
+        setToken(response.session.token);
+        setUser({
+          id: response.user.id,
+          email: response.user.email,
+          full_name: response.user.name || response.user.email,
+        });
+      }
     } catch (error: any) {
-      console.error('Registration error:', error.response?.data || error.message);
+      console.error('Registration error:', error);
       throw error;
     }
   };
 
   // ✅ LOGOUT
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await authClient.signOut();
+      setToken(null);
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const isAuthenticated = !!token;

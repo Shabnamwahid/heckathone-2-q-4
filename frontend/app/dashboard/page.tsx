@@ -10,18 +10,18 @@ export default function DashboardPage() {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated && token) {
+    if (isAuthenticated && user?.id) {
       fetchTasks();
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, user]);
 
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const response = await tasksAPI.getTasks();
+      const response = await tasksAPI.getTasks(user.id);
       setTasks(response.data);
       setError('');
     } catch (err) {
@@ -37,7 +37,7 @@ export default function DashboardPage() {
     if (!title.trim()) return;
 
     try {
-      const response = await tasksAPI.createTask({ title, description });
+      const response = await tasksAPI.createTask(user.id, { title, description });
       setTasks([...tasks, response.data]);
       setTitle('');
       setDescription('');
@@ -50,7 +50,7 @@ export default function DashboardPage() {
 
   const handleUpdateTask = async (id, updates) => {
     try {
-      const response = await tasksAPI.updateTask(id, updates);
+      const response = await tasksAPI.updateTask(user.id, id, updates);
       setTasks(tasks.map(task => task.id === id ? response.data : task));
       setError('');
     } catch (err) {
@@ -61,7 +61,7 @@ export default function DashboardPage() {
 
   const handleDeleteTask = async (id) => {
     try {
-      await tasksAPI.deleteTask(id);
+      await tasksAPI.deleteTask(user.id, id);
       setTasks(tasks.filter(task => task.id !== id));
       setError('');
     } catch (err) {
@@ -72,7 +72,7 @@ export default function DashboardPage() {
 
   const handleToggleComplete = async (id) => {
     try {
-      const response = await tasksAPI.toggleTask(id);
+      const response = await tasksAPI.toggleTask(user.id, id);
       setTasks(tasks.map(task => task.id === id ? response.data : task));
       setError('');
     } catch (err) {
@@ -112,7 +112,7 @@ export default function DashboardPage() {
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 h-fit transition-all duration-200 hover:shadow-md">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Add New Task</h2>
-              
+
               <form onSubmit={handleAddTask} className="space-y-4">
                 <div>
                   <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -128,7 +128,7 @@ export default function DashboardPage() {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Description
@@ -142,9 +142,9 @@ export default function DashboardPage() {
                     className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
                   />
                 </div>
-                
-                <button 
-                  type="submit" 
+
+                <button
+                  type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800"
                 >
                   Add Task
@@ -179,11 +179,11 @@ export default function DashboardPage() {
                   <p className="text-gray-500 dark:text-gray-400">Get started by adding a new task</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
                   {tasks.map(task => (
-                    <div 
-                      key={task.id} 
-                      className="p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-sm transition-shadow duration-200"
+                    <div
+                      key={task.id}
+                      className="p-5 bg-white dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-sm transition-shadow duration-200"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                         <div className="flex-1 min-w-0">
@@ -191,8 +191,8 @@ export default function DashboardPage() {
                             <button
                               onClick={() => handleToggleComplete(task.id)}
                               className={`flex-shrink-0 w-5 h-5 mt-1 rounded-full border flex items-center justify-center ${
-                                task.completed 
-                                  ? 'bg-green-500 border-green-500' 
+                                task.completed
+                                  ? 'bg-green-500 border-green-500'
                                   : 'border-gray-300 dark:border-gray-500'
                               }`}
                             >
@@ -204,8 +204,8 @@ export default function DashboardPage() {
                             </button>
                             <div>
                               <h3 className={`text-lg font-medium truncate ${
-                                task.completed 
-                                  ? 'text-gray-500 dark:text-gray-400 line-through' 
+                                task.completed
+                                  ? 'text-gray-500 dark:text-gray-400 line-through'
                                   : 'text-gray-900 dark:text-white'
                               }`}>
                                 {task.title}
@@ -223,8 +223,8 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         </div>
-                        
-                        <div className="flex space-x-2 flex-shrink-0">
+
+                        <div className="flex space-x-2 flex-shrink-0 mt-3 sm:mt-0">
                           <button
                             onClick={() => handleToggleComplete(task.id)}
                             className={`px-3 py-1.5 rounded-md text-sm font-medium transition ${
@@ -243,11 +243,11 @@ export default function DashboardPage() {
                           </button>
                         </div>
                       </div>
-                      
+
                       <div className="mt-3 flex items-center">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          task.completed 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
+                          task.completed
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                             : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                         }`}>
                           {task.completed ? (

@@ -1,102 +1,179 @@
-# REST API Endpoints Specification
+# REST API Endpoints
 
-## Purpose
-This document specifies all REST API endpoints for the TodoFlow application. It outlines the authentication requirements, request/response formats, and error handling for each endpoint.
+This document specifies the REST API endpoints for the TodoFlow application.
 
-## Requirements
-- All endpoints must follow RESTful principles
-- Authentication required for all protected endpoints
-- Consistent request/response formats
-- Proper HTTP status codes
-- Comprehensive error handling
+## Base URL
 
-## Implementation Details
-The API follows RESTful conventions with proper authentication using JWT tokens. All protected endpoints require a valid JWT token in the Authorization header. The API supports standard CRUD operations with appropriate HTTP methods and status codes.
+```
+https://api.todoflow.com
+```
 
-## Validation Criteria
-- All endpoints return appropriate HTTP status codes
-- Authentication is enforced on protected endpoints
-- Request/response formats are consistent
-- Error responses follow standard format
-- All validation rules are properly enforced
+## Authentication
 
-## Authentication Endpoints
-- `POST /auth/login` - Authenticate user and return JWT token
-  - Request: { email: string, password: string }
-  - Response: { access_token: string, token_type: string }
-  - Status: 200 OK
-  - Auth: None
+All endpoints require a Bearer token in the Authorization header:
 
-- `POST /auth/register` - Register new user and return JWT token
-  - Request: { email: string, password: string, first_name?: string, last_name?: string }
-  - Response: { access_token: string, token_type: string }
-  - Status: 200 OK
-  - Auth: None
+```
+Authorization: Bearer <jwt_token>
+```
 
-- `POST /auth/logout` - Invalidate user session
-  - Headers: Authorization: Bearer {token}
-  - Response: { message: string }
-  - Status: 200 OK
-  - Auth: Required
+## Endpoints
 
-- `GET /auth/me` - Get authenticated user information
-  - Headers: Authorization: Bearer {token}
-  - Response: User object without password
-  - Status: 200 OK
-  - Auth: Required
+### Tasks
 
-## Task Endpoints
-- `GET /api/tasks` - Retrieve all tasks for authenticated user
-  - Headers: Authorization: Bearer {token}
-  - Response: Array of Task objects
-  - Status: 200 OK
-  - Auth: Required
+#### Get all tasks for a user
+```
+GET /api/{user_id}/tasks
+```
 
-- `POST /api/tasks` - Create a new task
-  - Headers: Authorization: Bearer {token}
-  - Body: { title: string, description?: string, completed?: boolean }
-  - Response: Created Task object
-  - Status: 201 Created
-  - Auth: Required
+**Parameters:**
+- `user_id` (path): The ID of the user whose tasks to retrieve
 
-- `GET /api/tasks/{id}` - Retrieve a specific task
-  - Headers: Authorization: Bearer {token}
-  - Response: Task object
-  - Status: 200 OK
-  - Auth: Required
+**Headers:**
+- `Authorization`: Bearer token
 
-- `PUT /api/tasks/{id}` - Update a specific task
-  - Headers: Authorization: Bearer {token}
-  - Body: { title?: string, description?: string, completed?: boolean }
-  - Response: Updated Task object
-  - Status: 200 OK
-  - Auth: Required
+**Response:**
+```json
+[
+  {
+    "id": "uuid",
+    "title": "string",
+    "description": "string",
+    "completed": "boolean",
+    "created_at": "datetime",
+    "updated_at": "datetime",
+    "user_id": "uuid"
+  }
+]
+```
 
-- `DELETE /api/tasks/{id}` - Delete a specific task
-  - Headers: Authorization: Bearer {token}
-  - Response: Empty
-  - Status: 204 No Content
-  - Auth: Required
+#### Create a new task
+```
+POST /api/{user_id}/tasks
+```
 
-- `PATCH /api/tasks/{id}/toggle` - Toggle task completion status
-  - Headers: Authorization: Bearer {token}
-  - Response: Updated Task object
-  - Status: 200 OK
-  - Auth: Required
+**Parameters:**
+- `user_id` (path): The ID of the user creating the task
 
-## Request Format
-- Content-Type: application/json
-- Authorization header with JWT token for protected endpoints
+**Headers:**
+- `Authorization`: Bearer token
 
-## Response Format
-- Content-Type: application/json
-- Standard response format with data and optional message
-- Proper HTTP status codes
+**Body:**
+```json
+{
+  "title": "string",
+  "description": "string",
+  "completed": "boolean"
+}
+```
 
-## Error Responses
-- 400 Bad Request: Invalid request format
-- 401 Unauthorized: Missing or invalid JWT token
-- 403 Forbidden: Access to resource not permitted
-- 404 Not Found: Resource doesn't exist
-- 422 Unprocessable Entity: Validation errors
-- 500 Internal Server Error: Unexpected server error
+**Response:**
+```json
+{
+  "id": "uuid",
+  "title": "string",
+  "description": "string",
+  "completed": "boolean",
+  "created_at": "datetime",
+  "updated_at": "datetime",
+  "user_id": "uuid"
+}
+```
+
+#### Get a specific task
+```
+GET /api/{user_id}/tasks/{task_id}
+```
+
+**Parameters:**
+- `user_id` (path): The ID of the user
+- `task_id` (path): The ID of the task
+
+**Headers:**
+- `Authorization`: Bearer token
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "title": "string",
+  "description": "string",
+  "completed": "boolean",
+  "created_at": "datetime",
+  "updated_at": "datetime",
+  "user_id": "uuid"
+}
+```
+
+#### Update a task
+```
+PUT /api/{user_id}/tasks/{task_id}
+```
+
+**Parameters:**
+- `user_id` (path): The ID of the user
+- `task_id` (path): The ID of the task
+
+**Headers:**
+- `Authorization`: Bearer token
+
+**Body:**
+```json
+{
+  "title": "string",
+  "description": "string",
+  "completed": "boolean"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "title": "string",
+  "description": "string",
+  "completed": "boolean",
+  "created_at": "datetime",
+  "updated_at": "datetime",
+  "user_id": "uuid"
+}
+```
+
+#### Delete a task
+```
+DELETE /api/{user_id}/tasks/{task_id}
+```
+
+**Parameters:**
+- `user_id` (path): The ID of the user
+- `task_id` (path): The ID of the task
+
+**Headers:**
+- `Authorization`: Bearer token
+
+**Response:**
+- Status: 204 No Content
+
+#### Toggle task completion
+```
+PATCH /api/{user_id}/tasks/{task_id}/toggle
+```
+
+**Parameters:**
+- `user_id` (path): The ID of the user
+- `task_id` (path): The ID of the task
+
+**Headers:**
+- `Authorization`: Bearer token
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "title": "string",
+  "description": "string",
+  "completed": "boolean",
+  "created_at": "datetime",
+  "updated_at": "datetime",
+  "user_id": "uuid"
+}
+```
