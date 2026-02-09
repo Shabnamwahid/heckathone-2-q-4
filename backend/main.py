@@ -7,6 +7,7 @@ import asyncio
 # Import backend modules
 import db
 from routes.tasks import router as tasks_router
+from routes.auth import router as auth_router
 from config import settings
 
 app = FastAPI(title="Multi-User Todo API", version="1.0.0")
@@ -23,10 +24,15 @@ app.add_middleware(
 # Startup event - tables create kare
 @app.on_event("startup")
 async def startup_event():
-    await db.create_db_and_tables()
+    try:
+        await db.create_db_and_tables()
+        print("Database tables created successfully")
+    except Exception as e:
+        print(f"Error creating database tables: {e}")
 
 # Routes include - updated to include user_id in path
 app.include_router(tasks_router, prefix="/api/{user_id}", tags=["tasks"])
+app.include_router(auth_router, prefix="", tags=["auth"])
 
 @app.get("/")
 def root():

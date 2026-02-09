@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
@@ -13,19 +13,10 @@ router = APIRouter()
 @router.get("/tasks", response_model=List[TaskRead])
 async def get_tasks(
     user_id: str,
-    authorization: str = Header(..., description="Bearer token"),
+    current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ):
     """Get all tasks for the specified user"""
-    # Extract token from authorization header
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
-    
-    token = authorization[len("Bearer "):]
-    
-    # Verify the token and get current user
-    current_user = await get_current_user_from_token(token)
-    
     # Check if the user_id in the path matches the token user_id
     if current_user["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Not authorized to access this user's tasks")
@@ -39,19 +30,10 @@ async def get_tasks(
 async def create_task(
     user_id: str,
     task_data: TaskCreate,
-    authorization: str = Header(..., description="Bearer token"),
+    current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ):
     """Create a new task for the specified user"""
-    # Extract token from authorization header
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
-    
-    token = authorization[len("Bearer "):]
-    
-    # Verify the token and get current user
-    current_user = await get_current_user_from_token(token)
-    
     # Check if the user_id in the path matches the token user_id
     if current_user["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Not authorized to create tasks for this user")
@@ -73,19 +55,10 @@ async def create_task(
 async def get_task(
     user_id: str,
     task_id: UUID,
-    authorization: str = Header(..., description="Bearer token"),
+    current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ):
     """Get a specific task by ID"""
-    # Extract token from authorization header
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
-    
-    token = authorization[len("Bearer "):]
-    
-    # Verify the token and get current user
-    current_user = await get_current_user_from_token(token)
-    
     # Check if the user_id in the path matches the token user_id
     if current_user["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Not authorized to access this user's tasks")
@@ -104,19 +77,10 @@ async def update_task(
     user_id: str,
     task_id: UUID,
     task_update: TaskUpdate,
-    authorization: str = Header(..., description="Bearer token"),
+    current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ):
     """Update a specific task"""
-    # Extract token from authorization header
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
-    
-    token = authorization[len("Bearer "):]
-    
-    # Verify the token and get current user
-    current_user = await get_current_user_from_token(token)
-    
     # Check if the user_id in the path matches the token user_id
     if current_user["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Not authorized to update tasks for this user")
@@ -144,19 +108,10 @@ async def update_task(
 async def delete_task(
     user_id: str,
     task_id: UUID,
-    authorization: str = Header(..., description="Bearer token"),
+    current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ):
     """Delete a specific task"""
-    # Extract token from authorization header
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
-    
-    token = authorization[len("Bearer "):]
-    
-    # Verify the token and get current user
-    current_user = await get_current_user_from_token(token)
-    
     # Check if the user_id in the path matches the token user_id
     if current_user["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Not authorized to delete tasks for this user")
@@ -175,19 +130,10 @@ async def delete_task(
 async def toggle_task_completion(
     user_id: str,
     task_id: UUID,
-    authorization: str = Header(..., description="Bearer token"),
+    current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ):
     """Toggle the completion status of a task"""
-    # Extract token from authorization header
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
-    
-    token = authorization[len("Bearer "):]
-    
-    # Verify the token and get current user
-    current_user = await get_current_user_from_token(token)
-    
     # Check if the user_id in the path matches the token user_id
     if current_user["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Not authorized to update tasks for this user")
@@ -206,13 +152,3 @@ async def toggle_task_completion(
     await session.refresh(task)
 
     return task
-
-
-# Helper function to verify token and get user info
-async def get_current_user_from_token(token: str):
-    from dependencies import get_current_user
-    from fastapi.security import HTTPAuthorizationCredentials
-    
-    # Create credentials object for the existing get_current_user function
-    credentials = HTTPAuthorizationCredentials(scheme='Bearer', credentials=token)
-    return await get_current_user(credentials)
