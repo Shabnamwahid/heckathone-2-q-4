@@ -177,3 +177,12 @@ PATCH /api/{user_id}/tasks/{task_id}/toggle
   "user_id": "uuid"
 }
 ```
+
+<!--  -->
+## Authentication
+All endpoints require JWT authentication.
+
+Headers:
+Authorization: Bearer <JWT_TOKEN>
+
+Backend verifies token and identifies user from JWT.

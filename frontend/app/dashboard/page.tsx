@@ -13,15 +13,19 @@ export default function DashboardPage() {
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated && user?.id) {
+    if (isAuthenticated) {
       fetchTasks();
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated]);
 
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const response = await tasksAPI.getTasks(user.id);
+      const userId = localStorage.getItem('user_id');
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      const response = await tasksAPI.getTasks(userId);
       setTasks(response.data);
       setError('');
     } catch (err) {
@@ -37,7 +41,11 @@ export default function DashboardPage() {
     if (!title.trim()) return;
 
     try {
-      const response = await tasksAPI.createTask(user.id, { title, description });
+      const userId = localStorage.getItem('user_id');
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      const response = await tasksAPI.createTask(userId, { title, description });
       setTasks([...tasks, response.data]);
       setTitle('');
       setDescription('');
@@ -50,7 +58,11 @@ export default function DashboardPage() {
 
   const handleUpdateTask = async (id, updates) => {
     try {
-      const response = await tasksAPI.updateTask(user.id, id, updates);
+      const userId = localStorage.getItem('user_id');
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      const response = await tasksAPI.updateTask(userId, id, updates);
       setTasks(tasks.map(task => task.id === id ? response.data : task));
       setError('');
     } catch (err) {
@@ -61,7 +73,11 @@ export default function DashboardPage() {
 
   const handleDeleteTask = async (id) => {
     try {
-      await tasksAPI.deleteTask(user.id, id);
+      const userId = localStorage.getItem('user_id');
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      await tasksAPI.deleteTask(userId, id);
       setTasks(tasks.filter(task => task.id !== id));
       setError('');
     } catch (err) {
@@ -72,7 +88,11 @@ export default function DashboardPage() {
 
   const handleToggleComplete = async (id) => {
     try {
-      const response = await tasksAPI.toggleTask(user.id, id);
+      const userId = localStorage.getItem('user_id');
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      const response = await tasksAPI.toggleTask(userId, id);
       setTasks(tasks.map(task => task.id === id ? response.data : task));
       setError('');
     } catch (err) {
