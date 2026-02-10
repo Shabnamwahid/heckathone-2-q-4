@@ -7,6 +7,7 @@ import asyncio
 # Import backend modules
 import db
 from routes.tasks import router as tasks_router
+from routes.auth import router as auth_router
 from config import settings
 
 app = FastAPI(title="Multi-User Todo API", version="1.0.0")
@@ -31,6 +32,7 @@ async def startup_event():
 
 # Routes include - updated to include user_id in path
 app.include_router(tasks_router, prefix="/api/{user_id}", tags=["tasks"])
+app.include_router(auth_router)
 
 @app.get("/")
 def root():

@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { LogOut, Menu, X, User } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import { useSession } from '@/lib/auth';
 import { ThemeToggle } from './ThemeToggle';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === 'authenticated';
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -24,8 +25,12 @@ const Navbar = () => {
 
   const isActive = (href: string) => pathname === href;
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await import('@/lib/auth').then(({ signOut }) => signOut());
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
@@ -75,7 +80,7 @@ const Navbar = () => {
               <div className="flex items-center space-x-4 ml-4">
                 <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
                   <User className="h-5 w-5 mr-1 text-gray-500 dark:text-gray-400" />
-                  <span>{user?.full_name || user?.email}</span>
+                  <span>{session?.data?.user?.name || session?.data?.user?.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -150,19 +155,11 @@ const Navbar = () => {
                 </Link>
               ))
             )}
-            {!isAuthenticated && (
-              <Link
-                href="/login"
-                className="block pl-3 pr-4 py-2 border-l-4 text-base font-medium border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:hover:text-gray-300"
-              >
-                Login
-              </Link>
-            )}
             {isAuthenticated && (
               <div className="flex items-center justify-between px-3 py-2 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center text-base font-medium text-gray-700 dark:text-gray-300">
                   <User className="h-5 w-5 mr-2 text-gray-500 dark:text-gray-400" />
-                  <span>{user?.full_name || user?.email}</span>
+                  <span>{session?.data?.user?.name || session?.data?.user?.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}

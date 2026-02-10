@@ -1,33 +1,12 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import Navbar from '@/components/Navbar';
-import { AuthProvider } from '@/context/AuthContext';
-import { ThemeProvider } from 'next-themes';
+import Providers from "./providers"; // path adjust if needed
 
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'TodoFlow - Task Management',
-  description: 'A modern todo application with secure authentication',
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-background text-foreground`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <AuthProvider>
-            <Navbar />
-            <main>
-              {children}
-            </main>
-          </AuthProvider>
-        </ThemeProvider>
+    <html lang="en">
+      <body>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

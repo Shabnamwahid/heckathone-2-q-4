@@ -29,6 +29,7 @@ api.interceptors.response.use(
       // Clear auth token and redirect to login
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_id');
+      localStorage.removeItem('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -37,11 +38,11 @@ api.interceptors.response.use(
 
 // Authentication API
 export const authAPI = {
-  login: (email: string, password: string) => 
+  login: (email: string, password: string) =>
     api.post('/auth/login', { username: email, password }),
-  register: (fullName: string, email: string, password: string) => 
+  register: (fullName: string, email: string, password: string) =>
     api.post('/auth/register', { full_name: fullName, email, password }),
-  getMe: () => 
+  getMe: () =>
     api.get('/auth/me'),
 };
 
