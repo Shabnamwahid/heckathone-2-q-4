@@ -1,18 +1,18 @@
 'use client';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+// import { useEffect } from 'react';
+// import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 export default function Home() {
-  const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  // const router = useRouter();
+  // const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/dashboard');
-    }
-  }, [isAuthenticated, router]);
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     router.push('/dashboard');
+  //   }
+  // }, [isAuthenticated, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 transition-colors duration-200">
@@ -28,7 +28,7 @@ export default function Home() {
               Track, manage, and complete your tasks efficiently.
             </p>
             
-            {!isAuthenticated && (
+            {/* {!isAuthenticated && ( */}
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link 
                   href="/login" 
@@ -43,7 +43,7 @@ export default function Home() {
                   Create Account
                 </Link>
               </div>
-            )}
+             {/* )}  */}
           </div>
         </section>
 
@@ -89,7 +89,7 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        {!isAuthenticated && (
+        {/* {!isAuthenticated && ( */}
           <section className="py-16 text-center">
             <div className="max-w-2xl mx-auto">
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Ready to boost your productivity?</h2>
@@ -112,7 +112,7 @@ export default function Home() {
               </div>
             </div>
           </section>
-        )}
+        {/*   )}  */}
       </div>
     </div>
   );
