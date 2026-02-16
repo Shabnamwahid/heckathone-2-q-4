@@ -14,9 +14,16 @@ if settings.database_url.startswith("sqlite"):
     sqlite_url = settings.database_url.replace("sqlite:///", "sqlite+aiosqlite:///")
     engine = create_async_engine(sqlite_url, echo=True)
 else:
-    # For PostgreSQL, especially NeonDB, handle SSL appropriately
-    # Extract the connection string and handle sslmode parameter
+    # For PostgreSQL, ensure we use the async driver
+    # Convert psycopg2 URL to asyncpg URL if needed
     db_url = settings.database_url
+    if db_url.startswith("postgresql://") and not "driver=asyncpg" in db_url:
+        # Convert standard PostgreSQL URL to asyncpg format
+        db_url = db_url.replace("postgresql://", "postgresql+asyncpg://")
+    elif db_url.startswith("postgres://"):  # Also handle the shorthand version
+        # Convert shorthand PostgreSQL URL to asyncpg format
+        db_url = db_url.replace("postgres://", "postgresql+asyncpg://")
+    
     # If it's a NeonDB connection with sslmode=require, we need to handle it properly
     if 'neon.tech' in db_url and 'sslmode=require' in db_url:
         # For NeonDB, use the proper SSL settings
