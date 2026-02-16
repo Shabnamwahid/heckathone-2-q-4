@@ -15,7 +15,7 @@ app = FastAPI(title="Multi-User Todo API", version="1.0.0")
 # CORS middleware - frontend allow kare
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url],
+    allow_origins=["http://127.0.0.1:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

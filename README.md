@@ -255,6 +255,24 @@ If you prefer to deploy both frontend and backend together, you can:
 - Input validation using Pydantic models
 - SQL injection prevention through parameterized queries
 
+## 🔑 Authentication System (Updated)
+
+This project now uses Better Auth for enhanced authentication with the following features:
+
+- **Better Auth Integration**: Modern authentication system with PostgreSQL adapter
+- **JWT Token Management**: Secure JWT tokens with JWKS-based verification
+- **Database Tables**: Proper schema for users, sessions, accounts, and JWT keys
+- **Frontend Integration**: Next.js app with JWT client plugin
+- **Backend Verification**: FastAPI middleware to verify JWT tokens from Better Auth
+- **User Authorization**: Proper validation of user IDs in URL paths against JWT claims
+
+### Updated Architecture
+
+- **Frontend**: Next.js with Better Auth client and JWT plugin
+- **Backend**: FastAPI with JWT verification middleware that fetches JWKS from frontend
+- **Database**: PostgreSQL with tables for Better Auth (ba_users, ba_sessions, ba_accounts, ba_jwks, etc.)
+- **Security**: Enhanced token verification and user isolation
+
 ## 🤝 Contributing
 
 1. Fork the repository

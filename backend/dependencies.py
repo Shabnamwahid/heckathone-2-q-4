@@ -5,6 +5,7 @@ from jose import jwt
 from jwt.exceptions import InvalidTokenError
 from config import settings
 from typing import Dict, Any
+from auth_middleware import verify_better_auth_token
 
 security = HTTPBearer()
 
@@ -18,9 +19,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, settings.better_auth_secret, algorithm=settings.jwt_algorithm)
     return encoded_jwt
 
-def verify_jwt_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+# Keep the old function for backward compatibility if needed
+def verify_jwt_token_old(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
     """
-    Verify JWT token and return user info
+    Verify JWT token and return user info (legacy method)
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -38,3 +40,6 @@ def verify_jwt_token(credentials: HTTPAuthorizationCredentials = Depends(securit
         return {"user_id": user_id, "email": email}
     except InvalidTokenError:
         raise credentials_exception
+
+# Use the new Better Auth JWT verification
+verify_jwt_token = verify_better_auth_token

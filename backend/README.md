@@ -137,6 +137,8 @@ The application uses two main tables:
 - Passwords are hashed using bcrypt
 - Input validation using Pydantic models
 - SQL injection prevention through parameterized queries
+- JWKS-based JWT verification - backend fetches public keys from frontend to verify tokens
+- Enhanced user authorization - validates JWT claims against URL parameters
 
 ## Running in Production
 
