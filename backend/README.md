@@ -2,7 +2,7 @@
 
 This is the backend for the Todo App Phase 2, built with FastAPI and PostgreSQL.
 
-## Features
+## Features   FastAPI   PostgreSQL *SQLModel WT Authentication*
 
 - **FastAPI**: Modern, fast (high-performance) web framework for building APIs with Python 3.7+
 - **PostgreSQL**: Robust, production-ready database with async support
